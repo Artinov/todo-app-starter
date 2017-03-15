@@ -38,20 +38,31 @@ clearCompleted.onclick = function() {
 }
 
 markAllCompleted.onclick = function() {
-    todos.forEach(function(todo) {
-        var li = document.querySelector("li[todo-index='" + todo.index + "']");
-        var checkbox = li.querySelector("input");
+    var activeTodos = todos.filter(function(todo) {
+        return todo.isDone == false;
+    }).length;
 
-        if(todo.isDone == true) {
+    if(activeTodos == 0) {
+        todos.forEach(function(todo) {
+            var li = document.querySelector("li[todo-index='" + todo.index + "']");
+            var checkbox = li.querySelector("input");
+
             todo.isDone = false;
             checkbox.checked = false;
             li.setAttribute("class", "")
-        } else {
+        });
+    } else {
+        todos.forEach(function(todo) {
+            var li = document.querySelector("li[todo-index='" + todo.index + "']");
+            var checkbox = li.querySelector("input");
+
             todo.isDone = true;
             checkbox.checked = true;
             li.setAttribute("class", "todo-done")
-        }
-    });
+        });
+    }
+
+    countActiveTodos();
 }
 
 function renderTodos() {
