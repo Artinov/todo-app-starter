@@ -2,19 +2,23 @@ var inputText = document.querySelector("#todoText");
 var todosList = document.querySelector("#todoList");
 var todosLeft = document.querySelector("#todosLeft");
 var clearCompleted = document.querySelector("#clearCompleted");
+var todoIndexValue = 0;
 
 var todos = [
     {
         text: "first todo",
-        isDone: false
+        isDone: false,
+        index: 0
     }
 ];
 
 inputText.onkeypress = function(e) {
     if (e.keyCode == 13) {
+        todoIndexValue++;
         todos.push({
             text: inputText.value,
-            isDone: false
+            isDone: false,
+            index: todoIndexValue
         });
         inputText.value = "";
         renderTodos();
@@ -25,7 +29,7 @@ inputText.onkeypress = function(e) {
 clearCompleted.onclick = function() {
     todos.forEach(function(todo, i) {
         if(todo.isDone == true) {
-            var li = document.querySelector("li[todo-index='" + i + "']");
+            var li = document.querySelector("li[todo-index='" + todo.index + "']");
             todos.splice(i, 1);
             todosList.removeChild(li);
         }
@@ -40,13 +44,18 @@ function renderTodos() {
         return;
     }
 
-    todos.forEach(function(todo, i){
+    todos.forEach(function(todo){
         todoElementTemplate.querySelector("span").innerText = todo.text;
-        todoElementTemplate.setAttribute("todo-index", i)
+        todoElementTemplate.setAttribute("todo-index", todo.index)
         todoElementTemplate.querySelector("input").onchange = function(e) {
             var li = e.path[1];
             var todoIndex = li.getAttribute("todo-index");
-            var todo = todos[todoIndex];
+            var todo = todos.filter(function(todo) {
+                return todo.index == todoIndex;
+            });
+
+            todo = todos.indexOf(todo[0]);
+            todo = todos[todo];
 
             if(e.path[0].checked) {
                 li.setAttribute("class","todo-done");
