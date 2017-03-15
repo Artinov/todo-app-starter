@@ -2,6 +2,7 @@ var inputText = document.querySelector("#todoText");
 var todosList = document.querySelector("#todoList");
 var todosLeft = document.querySelector("#todosLeft");
 var clearCompleted = document.querySelector("#clearCompleted");
+
 var todos = [
     {
         text: "first todo",
