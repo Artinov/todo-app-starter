@@ -40,12 +40,15 @@ clearCompleted.onclick = function() {
 markAllCompleted.onclick = function() {
     todos.forEach(function(todo) {
         var li = document.querySelector("li[todo-index='" + todo.index + "']");
-        
+        var checkbox = li.querySelector("input");
+
         if(todo.isDone == true) {
             todo.isDone = false;
+            checkbox.checked = false;
             li.setAttribute("class", "")
         } else {
             todo.isDone = true;
+            checkbox.checked = true;
             li.setAttribute("class", "todo-done")
         }
     });
