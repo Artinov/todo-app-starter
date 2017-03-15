@@ -1,7 +1,12 @@
 var inputText = document.querySelector("#todoText");
 var todosList = document.querySelector("#todoList");
 var todosLeft = document.querySelector("#todosLeft");
-var todos = [];
+var todos = [
+    {
+        text: "first todo",
+        isDone: false
+    }
+];
 
 inputText.onkeypress = function(e) {
     if (e.keyCode == 13) {
@@ -11,6 +16,7 @@ inputText.onkeypress = function(e) {
         });
         inputText.value = "";
         renderTodos();
+        countActiveTodos();
     }
 }
 
@@ -33,6 +39,7 @@ function renderTodos() {
                 li.setAttribute("class","");
                 todo.isDone = false;
             }
+            countActiveTodos();
         }
         todosList.appendChild(todoElementTemplate);
     });
@@ -45,3 +52,6 @@ function countActiveTodos() {
 
     todosLeft.innerText = activeTodos.length;
 }
+
+renderTodos();
+countActiveTodos();
