@@ -2,6 +2,7 @@ var inputText = document.querySelector("#todoText");
 var todosList = document.querySelector("#todoList");
 var todosLeft = document.querySelector("#todosLeft");
 var clearCompleted = document.querySelector("#clearCompleted");
+var markAllCompleted = document.querySelector("#markAllCompleted");
 var todoIndexValue = 0;
 
 var todos = [
@@ -32,6 +33,20 @@ clearCompleted.onclick = function() {
             var li = document.querySelector("li[todo-index='" + todo.index + "']");
             todos.splice(i, 1);
             todosList.removeChild(li);
+        }
+    });
+}
+
+markAllCompleted.onclick = function() {
+    todos.forEach(function(todo) {
+        var li = document.querySelector("li[todo-index='" + todo.index + "']");
+        
+        if(todo.isDone == true) {
+            todo.isDone = false;
+            li.setAttribute("class", "")
+        } else {
+            todo.isDone = true;
+            li.setAttribute("class", "todo-done")
         }
     });
 }
