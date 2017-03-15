@@ -5,13 +5,11 @@ var clearCompleted = document.querySelector("#clearCompleted");
 var markAllCompleted = document.querySelector("#markAllCompleted");
 var todoIndexValue = 0;
 
-var todos = [
-    {
-        text: "first todo",
-        isDone: false,
-        index: 0
-    }
-];
+var todos = [{
+    text: "first todo",
+    isDone: false,
+    index: 0
+}];
 
 inputText.onkeypress = function(e) {
     if (e.keyCode == 13) {
@@ -29,9 +27,10 @@ inputText.onkeypress = function(e) {
 
 clearCompleted.onclick = function() {
     todos.forEach(function(todo, i) {
-        if(todo.isDone == true) {
+        if (todo.isDone == true) {
             var li = document.querySelector("li[todo-index='" + todo.index + "']");
             todos.splice(i, 1);
+            // TODO: investigate todo.index possible workflow
             todosList.removeChild(li);
         }
     });
@@ -42,7 +41,7 @@ markAllCompleted.onclick = function() {
         return todo.isDone == false;
     }).length;
 
-    if(activeTodos == 0) {
+    if (activeTodos == 0) {
         todos.forEach(function(todo) {
             var li = document.querySelector("li[todo-index='" + todo.index + "']");
             var checkbox = li.querySelector("input");
@@ -67,13 +66,13 @@ markAllCompleted.onclick = function() {
 
 function renderTodos() {
     var todoElementTemplate = document.querySelector("div li").cloneNode(true);
-    
-    if(todos.length == 0) {
+
+    if (todos.length == 0) {
         todosList.innerHTML = "";
         return;
     }
 
-    todos.forEach(function(todo){
+    todos.forEach(function(todo) {
         todoElementTemplate.querySelector("span").innerText = todo.text;
         todoElementTemplate.setAttribute("todo-index", todo.index)
         todoElementTemplate.querySelector("input").onchange = function(e) {
@@ -86,11 +85,11 @@ function renderTodos() {
             todo = todos.indexOf(todo[0]);
             todo = todos[todo];
 
-            if(e.path[0].checked) {
-                li.setAttribute("class","todo-done");
+            if (e.path[0].checked) {
+                li.setAttribute("class", "todo-done");
                 todo.isDone = true;
             } else {
-                li.setAttribute("class","");
+                li.setAttribute("class", "");
                 todo.isDone = false;
             }
             countActiveTodos();
@@ -98,10 +97,14 @@ function renderTodos() {
         todoElementTemplate.querySelector("button").onclick = function(e) {
             var li = e.path[1];
             var todoIndex = li.getAttribute("todo-index");
-            todos.splice(todoIndex, 1);
+            var todo = todos.filter(function(todo) {
+                return todo.index == todoIndex;
+            });
+
+            todoIndex = todos.indexOf(todo[0]);
+            todos.splice(Number(todoIndex), 1);
 
             todosList.removeChild(li);
-            // renderTodos();
             countActiveTodos();
         }
         todosList.appendChild(todoElementTemplate);
@@ -109,7 +112,7 @@ function renderTodos() {
 }
 
 function countActiveTodos() {
-    var activeTodos = todos.filter(function(todo){
+    var activeTodos = todos.filter(function(todo) {
         return todo.isDone == false;
     });
 
