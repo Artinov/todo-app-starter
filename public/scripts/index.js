@@ -16,15 +16,35 @@ var todos = [];
 inputText.onkeypress = function(e) {
     if (e.keyCode == 13) {
         todoIndexValue++;
-        todos.push({
+
+        var newTodo = {
             text: inputText.value,
             isDone: false,
             index: todoIndexValue
-        });
-        updateLocalStorage();
-        inputText.value = "";
-        renderTodos(globalTodoFilter);
-        countActiveTodos();
+        }
+
+
+        $.ajax({
+            url: "/todo/add",
+            method: "POST",
+            data: newTodo
+        }).then(function(res) {
+            console.log(res)
+
+            if (res == true) {
+                todos.push(newTodo);
+                updateLocalStorage();
+                inputText.value = "";
+                renderTodos(globalTodoFilter);
+                countActiveTodos();
+            } else {
+                alert("Error when saving todo: " + res)
+            }
+
+
+        })
+
+
     }
 }
 
