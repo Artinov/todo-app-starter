@@ -17,10 +17,15 @@ inputText.onkeypress = function(e) {
     if (e.keyCode == 13) {
         todoIndexValue++;
 
+        var id = new Date();
+        id = id.toString();
+        id = btoa(id);
+
         var newTodo = {
             text: inputText.value,
             isDone: false,
-            index: todoIndexValue
+            index: todoIndexValue,
+            id: id
         }
 
 
@@ -40,8 +45,6 @@ inputText.onkeypress = function(e) {
             } else {
                 alert("Error when saving todo: " + res)
             }
-
-
         })
 
 
@@ -126,7 +129,7 @@ function renderTodos(todoFilter) {
         var todoElementTemplate = document.querySelector("div#hollow li").cloneNode(true);
 
         todoElementTemplate.querySelector("span").innerText = todo.text;
-        todoElementTemplate.setAttribute("todo-index", todo.index)
+        todoElementTemplate.setAttribute("todo-index", todo._id)
 
         if (todo.isDone == true) {
             todoElementTemplate.setAttribute("class", "list-group-item todo-done")
@@ -137,35 +140,58 @@ function renderTodos(todoFilter) {
             var li = e.path[1];
             var todoIndex = li.getAttribute("todo-index");
             var todo = todos.filter(function(todo) {
-                return todo.index == todoIndex;
+                return todo._id == todoIndex;
             });
 
             todo = todos.indexOf(todo[0]);
             todo = todos[todo];
 
             if (e.path[0].checked) {
-                li.setAttribute("class", "list-group-item todo-done");
                 todo.isDone = true;
             } else {
-                li.setAttribute("class", "list-group-item");
                 todo.isDone = false;
             }
-            countActiveTodos();
-            updateLocalStorage();
+
+            $.ajax({
+                url: "/todo/update",
+                method: "POST",
+                data: todo
+            }).then(function(res) {
+                if (res == true) {
+                    if (e.path[0].checked) {
+                        li.setAttribute("class", "list-group-item todo-done");
+                    } else {
+                        li.setAttribute("class", "list-group-item");
+                    }
+                    countActiveTodos();
+                    updateLocalStorage();
+                } else {
+                    alert(res);
+                }
+            })
+
+
         }
         todoElementTemplate.querySelector("button").onclick = function(e) {
             var li = e.path[1];
             var todoIndex = li.getAttribute("todo-index");
             var todo = todos.filter(function(todo) {
-                return todo.index == todoIndex;
+                return todo._id == todoIndex;
             });
 
-            todoIndex = todos.indexOf(todo[0]);
-            todos.splice(Number(todoIndex), 1);
+            $.ajax({
+                url: "/todo/delete",
+                method: "POST",
+                data: todo[0]
+            }).then(function(res) {
+                if (res == true) {
+                    init();
+                } else {
+                    alert(res);
+                }
+            })
 
-            todosList.removeChild(li);
-            countActiveTodos();
-            updateLocalStorage();
+
         }
         todosList.appendChild(todoElementTemplate);
     });
@@ -198,17 +224,25 @@ function countActiveTodos() {
 }
 
 function updateLocalStorage() {
-    localStorage.setItem("todos", JSON.stringify(todos));
+    // localStorage.setItem("todos", JSON.stringify(todos));
 }
 
 function init() {
-    var localStorageTodos = localStorage.todos;
+    // var localStorageTodos = localStorage.todos;
 
-    if (localStorageTodos != undefined) {
-        todos = JSON.parse(localStorageTodos);
-    }
+    // if (localStorageTodos != undefined) {
+    //     todos = JSON.parse(localStorageTodos);
+    // }
 
-    renderTodos(null);
-    countActiveTodos();
+    $.ajax({
+        url: "/todo",
+        method: "GET"
+    }).then(function(res) {
+        todos = res;
+
+        renderTodos(null);
+        countActiveTodos();
+    })
 }
+
 init();

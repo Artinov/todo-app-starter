@@ -15,7 +15,13 @@ mongoose.connect('mongodb://localhost/todos', function(err) {
 var Todo = mongoose.model('Todo', {
     text: String,
     isDone: Boolean,
-    index: Number
+    index: Number,
+    id: String
+});
+
+var User = mongoose.model('Todo', {
+    login: String,
+    password: String
 });
 
 
@@ -32,8 +38,54 @@ app.post("/todo/add", function(req, res) {
     var newTodo = new Todo(req.body);
 
     newTodo.save(function(err) {
-        if (!err) {
+        if (err) {
             res.send("Saving issue: " + err);
+        } else {
+            res.send(true);
+        }
+    });
+});
+
+app.post('/todo/update', function(req, res) {
+    var updatedTodo = req.body;
+
+    Todo.findOne({ id: updatedTodo.id }, function(err, todo) {
+        if (err) {
+            res.send("No todo found");
+            return;
+        }
+
+        todo.isDone = updatedTodo.isDone;
+        todo.save(function(err) {
+            if (err) {
+                res.send("Update issue: " + err);
+            } else {
+                res.send(true);
+            }
+        })
+    })
+});
+
+app.post("/todo/find", function(req, res) {
+    var searchRequest = req.body;
+    Todo.find(searchRequest, function(err, todos) {
+        res.send(todos);
+    });
+});
+
+app.get("/todo", function(req, res) {
+    Todo.find({}, function(err, todos) {
+        res.send(todos);
+    });
+});
+
+app.post("/todo/delete", function(req, res) {
+    var todo = req.body;
+    console.log(todo);
+
+    Todo.remove({ id: todo.id }, function(err) {
+        if (err) {
+            res.send("Delete error: " + err);
         } else {
             res.send(true);
         }
